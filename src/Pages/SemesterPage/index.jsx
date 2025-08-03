@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Card from '../../Components/Card';
 import { Calendar, BookOpen } from 'lucide-react';
 import { API_ENDPOINTS } from '../../config/api';
+import ErrorBoundary from '../../Components/ErrorBoundary';
 import './index.css';
 
 const Semesters = () => {
@@ -13,6 +14,21 @@ const Semesters = () => {
   const [branch, setBranch] = useState('');
   const [year, setYear] = useState('');
   const [syllabusData, setSyllabusData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // Use ref to track if component is mounted
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    // Reset mounted flag when component mounts
+    isMountedRef.current = true;
+    
+    // Cleanup function to set mounted flag to false
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -21,12 +37,17 @@ const Semesters = () => {
     const br = params.get('branch') || '';
     const yr = params.get('year') || '';
 
+    // Only update state if component is still mounted
+    if (!isMountedRef.current) return;
+
     setRegulation(reg);
     setUniversity(uni);
     setBranch(br);
     setYear(yr);
+    setError(null);
 
     if (reg && uni && br && yr) {
+      setLoading(true);
       console.log('Fetching data for:', { reg, uni, br, yr });
       console.log('API URL:', API_ENDPOINTS.syllabus);
       
@@ -39,14 +60,23 @@ const Semesters = () => {
           return res.json();
         })
         .then(data => {
+          // Only update state if component is still mounted
+          if (!isMountedRef.current) return;
+          
           console.log('Full API response:', data);
           const yearData = data?.[reg]?.[uni]?.[br]?.[yr] || {};
           console.log('Extracted year data:', yearData);
           setSyllabusData(yearData);
+          setLoading(false);
         })
         .catch(err => {
+          // Only update state if component is still mounted
+          if (!isMountedRef.current) return;
+          
           console.error('Error loading syllabus data:', err);
           console.error('Failed to fetch from:', API_ENDPOINTS.syllabus);
+          setError(err.message);
+          setLoading(false);
         });
     }
   }, [location]);
@@ -57,21 +87,79 @@ const Semesters = () => {
   };
 
   const handleSemesterSelect = (semester) => {
-    navigate(`/subjects?regulation=${regulation}&university=${university}&branch=${branch}&year=${year}&semester=${semester}`);
+    try {
+      navigate(`/subjects?regulation=${regulation}&university=${university}&branch=${branch}&year=${year}&semester=${semester}`);
+    } catch (err) {
+      console.error('Navigation error:', err);
+      setError('Navigation failed. Please try again.');
+    }
   };
 
   const handleSyllabusView = (semester) => {
-    const semesterData = syllabusData?.[semester];
-    const syllabusPdf = semesterData?.semesterSyllabus;
+    try {
+      const semesterData = syllabusData?.[semester];
+      const syllabusPdf = semesterData?.semesterSyllabus;
 
-    if (syllabusPdf) {
-      window.open(syllabusPdf, '_blank');
-    } else {
-      alert(`Syllabus PDF not found for Semester ${semester}`);
+      if (syllabusPdf) {
+        window.open(syllabusPdf, '_blank');
+      } else {
+        alert(`Syllabus PDF not found for Semester ${semester}`);
+      }
+    } catch (err) {
+      console.error('Syllabus view error:', err);
+      setError('Failed to open syllabus. Please try again.');
     }
   };
 
   const semesters = getSemestersForYear();
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="semesterpage-root">
+        <div className="semesterpage-bg">
+          <div className="bg-dot dot1"></div>
+          <div className="bg-dot dot2"></div>
+        </div>
+        <div className="semesterpage-main">
+          <div className="semesterpage-titlebox">
+            <h1>Loading...</h1>
+            <p>Fetching semester data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="semesterpage-root">
+        <div className="semesterpage-bg">
+          <div className="bg-dot dot1"></div>
+          <div className="bg-dot dot2"></div>
+        </div>
+        <div className="semesterpage-header">
+          <button className="semesterpage-back" onClick={() => navigate(-1)}>←</button>
+          <div className="navbar-logo-header">
+            <BookOpen className="w-6 h-6 text-cyan-400" onClick={() => navigate('/')} />
+          </div>
+        </div>
+        <div className="semesterpage-main">
+          <div className="semesterpage-titlebox">
+            <h1>Error</h1>
+            <p style={{ color: '#ff6b6b' }}>{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#00ffff', color: '#000', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="semesterpage-root">
@@ -150,4 +238,11 @@ const Semesters = () => {
   );
 };
 
-export default Semesters;
+// Wrap the component with ErrorBoundary
+const SemestersWithErrorBoundary = () => (
+  <ErrorBoundary isPageLevel={true}>
+    <Semesters />
+  </ErrorBoundary>
+);
+
+export default SemestersWithErrorBoundary;
