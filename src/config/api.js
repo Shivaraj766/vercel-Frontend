@@ -4,7 +4,7 @@ const API_CONFIG = {
     baseURL: 'http://localhost:3000',
   },
   production: {
-    baseURL: import.meta.env.VITE_API_URL || 'https://your-backend-app.vercel.app',
+    baseURL: import.meta.env.VITE_API_URL || 'https://digilib-backend.onrender.com',
   }
 };
 
