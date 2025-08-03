@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Card from '../../Components/Card';
-import { Calendar } from 'lucide-react';
+import { Calendar, BookOpen } from 'lucide-react';
 import { API_ENDPOINTS } from '../../config/api';
 import './index.css';
 
@@ -27,15 +27,26 @@ const Semesters = () => {
     setYear(yr);
 
     if (reg && uni && br && yr) {
+      console.log('Fetching data for:', { reg, uni, br, yr });
+      console.log('API URL:', API_ENDPOINTS.syllabus);
+      
       fetch(API_ENDPOINTS.syllabus)
-        .then(res => res.json())
+        .then(res => {
+          console.log('Response status:', res.status);
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => {
+          console.log('Full API response:', data);
           const yearData = data?.[reg]?.[uni]?.[br]?.[yr] || {};
+          console.log('Extracted year data:', yearData);
           setSyllabusData(yearData);
-          console.log(data)
         })
         .catch(err => {
           console.error('Error loading syllabus data:', err);
+          console.error('Failed to fetch from:', API_ENDPOINTS.syllabus);
         });
     }
   }, [location]);
