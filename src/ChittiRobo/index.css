@@ -1,0 +1,300 @@
+
+.chitti-robo-container {
+  width: 180px;
+  height: 180px;
+  background: #000000;
+  border-radius: 50%;
+  margin: 0;
+  box-shadow: 0 2px 16px rgba(24, 22, 22, 0.2);
+  overflow: visible;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.chitti-robo-container:hover {
+  box-shadow: 
+    0 4px 32px rgba(0, 255, 255, 0.4), 
+    0 2px 16px rgba(24, 22, 22, 0.2),
+    0 0 0 3px rgba(0, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.chitti-robo-container:active {
+  transform: scale(0.98);
+}
+
+/* Robot Click Instruction */
+.robot-instruction {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.robot-instruction p {
+  color: #38bdf8;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  animation: pulse-text 2s infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Animated Text Container */
+.animated-text-container {
+  position: absolute;
+  top: -40px;
+  left: -100px;
+  width: 380px;
+  height: 260px;
+  pointer-events: none;
+  z-index: 15;
+  overflow: visible;
+}
+
+/* Animated Text Elements */
+.animated-text {
+  position: absolute;
+  color: #00ffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+  white-space: nowrap;
+  opacity: 0;
+  animation: textRotate 8s infinite linear;
+  text-align: center;
+  z-index: 16;
+}
+
+.animated-text.text-1 {
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+
+
+.animated-text.text-3 {
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 4s;
+}
+
+.animated-text.text-4 {
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  animation-delay: 6s;
+}
+
+@keyframes textRotate {
+  0%, 12% { 
+    opacity: 0; 
+    transform: translateX(-50%) scale(0.8); 
+  }
+  15%, 35% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1); 
+  }
+  40%, 100% { 
+    opacity: 0; 
+    transform: translateX(-50%) scale(0.8); 
+  }
+}
+
+/* Different transforms for different positions */
+.animated-text.text-2 {
+  animation-name: textRotateRight;
+}
+
+.animated-text.text-3 {
+  animation-name: textRotateBottom;
+}
+
+.animated-text.text-4 {
+  animation-name: textRotateLeft;
+}
+
+@keyframes textRotateRight {
+  0%, 12% { 
+    opacity: 0; 
+    transform: translateY(-50%) scale(0.8); 
+  }
+  15%, 35% { 
+    opacity: 1; 
+    transform: translateY(-50%) scale(1); 
+  }
+  40%, 100% { 
+    opacity: 0; 
+    transform: translateY(-50%) scale(0.8); 
+  }
+}
+
+@keyframes textRotateBottom {
+  0%, 12% { 
+    opacity: 0; 
+    transform: translateX(-50%) scale(0.8); 
+  }
+  15%, 35% { 
+    opacity: 1; 
+    transform: translateX(-50%) scale(1); 
+  }
+  40%, 100% { 
+    opacity: 0; 
+    transform: translateX(-50%) scale(0.8); 
+  }
+}
+
+@keyframes textRotateLeft {
+  0%, 12% { 
+    opacity: 0; 
+    transform: translateY(-50%) scale(0.8); 
+  }
+  15%, 35% { 
+    opacity: 1; 
+    transform: translateY(-50%) scale(1); 
+  }
+  40%, 100% { 
+    opacity: 0; 
+    transform: translateY(-50%) scale(0.8); 
+  }
+}
+
+/* Chat trigger overlay */
+.chat-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 50%;
+}
+
+.chitti-chatbot-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chitti-chatbot-popup {
+  background: #181c24;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.3);
+  width: 95vw;
+  max-width: 350px;
+  min-height: 320px;
+  padding: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.chitti-chatbot-header {
+  background: #00bcd4;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  text-align: center;
+}
+.chitti-chatbot-body {
+  flex: 1;
+  padding: 16px;
+  color: #fff;
+  font-size: 1rem;
+}
+.chitti-chatbot-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.chitti-robo-floating {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  z-index: 10;
+}
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .chitti-robo-container {
+    width: 90px;
+    height: 90px;
+    padding:30px;
+  }
+  .chitti-robo-floating {
+    top: 8px;
+    right: 8px;
+  }
+  
+  /* Mobile animated text adjustments */
+  .animated-text-container {
+    top: -30px;
+    left: -60px;
+    width: 210px;
+    height: 150px;
+  }
+  
+  .animated-text {
+    font-size: 0.7rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+  }
+  
+  .animated-text.text-1 {
+    top: 10px;
+  }
+  
+  .animated-text.text-2 {
+    right: 15px;
+  }
+  
+  .animated-text.text-3 {
+    bottom: 10px;
+  }
+  
+  .animated-text.text-4 {
+    left: 15px;
+  }
+  
+  .robot-instruction {
+    bottom: -30px;
+  }
+  
+  .robot-instruction p {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+  }
+}
