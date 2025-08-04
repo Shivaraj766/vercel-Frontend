@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Card from '../../Components/Card';
 import { Calendar, BookOpen } from 'lucide-react';
-import { API_ENDPOINTS } from '../../config/api';
+import { apiService } from '../../config/api';
 import ErrorBoundary from '../../Components/ErrorBoundary';
 import './index.css';
 
@@ -48,24 +48,17 @@ const Semesters = () => {
 
     if (reg && uni && br && yr) {
       setLoading(true);
-      console.log('Fetching data for:', { reg, uni, br, yr });
-      console.log('API URL:', API_ENDPOINTS.syllabus);
+      console.log('🔍 Fetching data for:', { reg, uni, br, yr });
       
-      fetch(API_ENDPOINTS.syllabus)
-        .then(res => {
-          console.log('Response status:', res.status);
-          if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`);
-          }
-          return res.json();
-        })
+      // Use the optimized API service
+      apiService.getSyllabusData()
         .then(data => {
           // Only update state if component is still mounted
           if (!isMountedRef.current) return;
           
-          console.log('Full API response:', data);
+          console.log('📚 Full API response received');
           const yearData = data?.[reg]?.[uni]?.[br]?.[yr] || {};
-          console.log('Extracted year data:', yearData);
+          console.log('📖 Extracted year data:', yearData);
           setSyllabusData(yearData);
           setLoading(false);
         })
@@ -73,9 +66,8 @@ const Semesters = () => {
           // Only update state if component is still mounted
           if (!isMountedRef.current) return;
           
-          console.error('Error loading syllabus data:', err);
-          console.error('Failed to fetch from:', API_ENDPOINTS.syllabus);
-          setError(err.message);
+          console.error('❌ Error loading syllabus data:', err);
+          setError(err.message || 'Failed to load data. Please try again.');
           setLoading(false);
         });
     }
@@ -113,7 +105,7 @@ const Semesters = () => {
 
   const semesters = getSemestersForYear();
 
-  // Show loading state
+  // Show loading state with progress indicator
   if (loading) {
     return (
       <div className="semesterpage-root">
@@ -121,10 +113,33 @@ const Semesters = () => {
           <div className="bg-dot dot1"></div>
           <div className="bg-dot dot2"></div>
         </div>
+        <div className="semesterpage-header">
+          <button className="semesterpage-back" onClick={() => navigate(-1)}>←</button>
+          <div className="navbar-logo-header">
+            <BookOpen className="w-6 h-6 text-cyan-400" onClick={() => navigate('/')} />
+          </div>
+        </div>
         <div className="semesterpage-main">
           <div className="semesterpage-titlebox">
-            <h1>Loading...</h1>
-            <p>Fetching semester data...</p>
+            <h1>🔄 Loading Semesters...</h1>
+            <p>Fetching semester data from server...</p>
+            <div style={{ 
+              marginTop: '20px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: '10px'
+            }}>
+              <div style={{
+                width: '20px',
+                height: '20px',
+                border: '3px solid #333',
+                borderTop: '3px solid #00ffff',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <span>This may take a moment if the server is starting up...</span>
+            </div>
           </div>
         </div>
       </div>

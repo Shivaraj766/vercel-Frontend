@@ -5,9 +5,18 @@ import YearPage from './Pages/YearPage';
 import SemestersPage from './Pages/SemesterPage';
 import SubjectPage from './Pages/SubjectPage';
 import UnitPage from './Pages/UnitPage';
+import { useEffect } from 'react';
+import { apiService } from './config/api';
 
 import NotFound  from './Pages/NotFound';
+
 function App() {
+  // 🚀 Preload data when app starts
+  useEffect(() => {
+    console.log('🚀 App started - preloading syllabus data...');
+    apiService.preloadData();
+  }, []);
+
   return (
     <>
     <Routes>
