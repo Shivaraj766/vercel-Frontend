@@ -9,9 +9,9 @@ import './index.css';
 function ChittiRoboModel({ onClick }) {
   const gltf = useGLTF('/Chitti.glb');
   
-  const handleClick = (event) => {
+  const handleDoubleClick = (event) => {
     event.stopPropagation();
-    console.log('Robot clicked!'); // Debug log
+    console.log('Robot double-clicked!'); // Debug log
     onClick();
   };
   
@@ -19,8 +19,7 @@ function ChittiRoboModel({ onClick }) {
     <primitive 
       object={gltf.scene} 
       scale={2} 
-      onClick={handleClick}
-      onPointerDown={handleClick}
+      onDoubleClick={handleDoubleClick}
       style={{ cursor: 'pointer' }}
     />
   );
@@ -32,8 +31,8 @@ useGLTF.preload('/Chitti.glb');
 export default function ChittiRobo({ showFloatingButton = true }) {
   const [isChatBotOpen, setIsChatBotOpen] = useState(false);
 
-  const handleRobotClick = () => {
-    console.log('handleRobotClick called!'); // Debug log
+  const handleRobotDoubleClick = () => {
+    console.log('handleRobotDoubleClick called!'); // Debug log
     console.log('Current isChatBotOpen:', isChatBotOpen); // Debug log
     setIsChatBotOpen(true);
   };
@@ -49,7 +48,7 @@ export default function ChittiRobo({ showFloatingButton = true }) {
   return (
     <>
       <ErrorBoundary>
-        <div className="chitti-robo-container" onClick={handleRobotClick}>
+        <div className="chitti-robo-container">
           <Canvas 
             camera={{ position: [0, 1, 5], fov: 50 }}
             onError={(error) => console.error('Canvas error:', error)}
@@ -57,7 +56,7 @@ export default function ChittiRobo({ showFloatingButton = true }) {
             <ambientLight intensity={0.7} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
             <Suspense fallback={null}>
-              <ChittiRoboModel onClick={handleRobotClick} />
+              <ChittiRoboModel onClick={handleRobotDoubleClick} />
             </Suspense>
             <OrbitControls enableZoom={true} enablePan={false} />
           </Canvas>
